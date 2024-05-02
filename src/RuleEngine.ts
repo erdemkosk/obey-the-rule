@@ -71,6 +71,10 @@ export class RuleEngine {
      * @returns {boolean} - True if the condition is met, otherwise false.
      */
     private evaluateSingleCondition(condition: Condition, value?: any): boolean {
+      if(!value){
+        return false;
+      }
+
       switch (condition.operator) {
         case Operator.LOOSE_EQUAL:
           return value[condition.fact] == condition.value;
@@ -109,12 +113,17 @@ export class RuleEngine {
      * @returns {Promise<any>} - The result of the function call.
      */
     private async callFunction(action: Action, beforeResult?: any) : Promise<any> {
-      if (action.func in this.functions && typeof this.functions[action.func] === 'function') {
-        return await this.functions[action.func](action.params, beforeResult);
-      } else {
-        console.error(`Function '${action.func}' not found or not a function.`);
+      try {
+        if (action.func in this.functions && typeof this.functions[action.func] === 'function') {
+          return await this.functions[action.func](action.params, beforeResult);
+        } else {
+          console.error(`Function '${action.func}' not found or not a function.`);
+        }
+      } catch (error) {
+        console.error(`An error occurred while executing function '${action.func}':`, error);
       }
     }
+    
   }
 
   export { Operator };
