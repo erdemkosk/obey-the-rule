@@ -1,5 +1,7 @@
 # Obey The Rule
 
+![Logo](https://i.imgur.com/bC7sXDJ.png)
+
 This project includes a minimalist rule engine implemented in TypeScript. It provides a lightweight solution for managing conditional logic and automating decision-making processes.
 
 The and and or keys are used within the conditions object to combine specific conditions.
