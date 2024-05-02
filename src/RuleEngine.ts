@@ -4,7 +4,7 @@ import { Condition } from "./ICondition.js";
 import { Action } from "./IAction.js";
 import { Operator } from "./Operator.js";
 
-export default class RuleEngine {
+export class RuleEngine {
     rules: Rule[];
     functions: any;
   
@@ -13,11 +13,11 @@ export default class RuleEngine {
       this.functions = functions;
     }
   
-    addRule(rule: Rule) : void {
+    public addRule(rule: Rule) : void {
       this.rules.push(rule);
     }
   
-    async evaluateFacts() : Promise<void> {
+    public async obey() : Promise<void> {
       for (const rule of this.rules) {
         const beforeResult = await this.callFunction(rule.before);
         if (this.evaluateConditions(rule.conditions, beforeResult)) {
@@ -30,7 +30,7 @@ export default class RuleEngine {
       }
     }
   
-    evaluateConditions(conditions: Rule['conditions'], value?: any): boolean {
+    private evaluateConditions(conditions: Rule['conditions'], value?: any): boolean {
       let status = false;
       
       if ('and' in conditions) {
@@ -55,7 +55,7 @@ export default class RuleEngine {
       }
     }
   
-    async callFunction(action: Action, beforeResult?: any) : Promise<any> {
+    private async callFunction(action: Action, beforeResult?: any) : Promise<any> {
       if (action.func in this.functions && typeof this.functions[action.func] === 'function') {
        
         return await this.functions[action.func](action.params, beforeResult);
@@ -64,3 +64,5 @@ export default class RuleEngine {
       }
     }
   }
+
+  export { Operator };

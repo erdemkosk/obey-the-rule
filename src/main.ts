@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Operator } from "./Operator.js";
-import RuleEngine from "./RuleEngine.js";
+
+import {RuleEngine , Operator} from "./RuleEngine.js";
 
 const functions = {
   getCourier: getCourier,
@@ -85,4 +85,4 @@ engine.addRule({
   }},
 });
  
-engine.evaluateFacts();
+engine.obey();
