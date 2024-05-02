@@ -2,7 +2,7 @@ import { RuleEngine, Operator } from "../src/RuleEngine.js";
 
 describe('Rule Engine', () => {
   let ruleEngine;
-  let mockConsoleError;
+
   const functions = {
     beforeFunction: jest.fn(() => ({ factValue: 10 , message : 'Hello', array:['fact'] })),
     afterFunction: jest.fn(),
@@ -10,7 +10,7 @@ describe('Rule Engine', () => {
   };  
 
   beforeAll(() => {
-    mockConsoleError = jest.spyOn(console, 'error').mockImplementation();
+   
   });
   
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe('Rule Engine', () => {
   });
 
   afterAll(() => {
-    mockConsoleError.mockRestore();
+   
   });
 
 
@@ -201,14 +201,16 @@ describe('Rule Engine', () => {
 
   it('reports error when the before function is not found', async () => {
     const rule = {
-      before: {func : 'nonExistentFunction'},
+      before: { func: 'nonExistentFunction' },
       conditions: { and: [{ fact: 'factValue', operator: Operator.STRICT_EQUAL, value: 10 }] },
-      after: {func : 'afterFunction'},
+      after: { func: 'afterFunction' },
     };
     ruleEngine.addRule(rule);
-    await ruleEngine.obey();
-    expect(mockConsoleError).toHaveBeenCalledWith("Function 'nonExistentFunction' not found or not a function.");
+    const results = await ruleEngine.obey();
+    const errorResult = results.find(result => result.satisfied === false);
+    expect(errorResult.reason).toBe("An error occurred: Function 'nonExistentFunction' not found or not a function.");
   });
+  
 
   it('catches and logs errors from the function execution', async () => {
     const rule = {
@@ -217,7 +219,32 @@ describe('Rule Engine', () => {
       after: { func: 'afterFunction' },
     };
     ruleEngine.addRule(rule);
-    await ruleEngine.obey();
-    expect(mockConsoleError).toHaveBeenCalled();
+    const results = await ruleEngine.obey();
+    expect(results[0].reason).toContain('Error in function');
   });
+
+  it('catches and logs errors when types do not match', async () => {
+    const rule = {
+      before: { func: 'beforeFunction' },
+      conditions: { and: [{ fact: 'factValue', operator: Operator.STRICT_EQUAL, value: '10' }] }, // '10' string, ama beklenen number
+      after: { func: 'afterFunction' },
+    };
+    ruleEngine.addRule(rule);
+    const results = await ruleEngine.obey();
+    expect(results[0].reason).toContain('Conditions not met');
+  });
+  
+  it('returns successful result for a successful condition', async () => {
+    const rule = {
+      before: { func: 'beforeFunction' },
+      conditions: { and: [{ fact: 'factValue', operator: Operator.STRICT_EQUAL, value: 10 }] },
+      after: { func: 'afterFunction' },
+    };
+    ruleEngine.addRule(rule);
+    const results = await ruleEngine.obey();
+    expect(results[0].satisfied).toBe(true);
+  });
+  
+  
+  
 });

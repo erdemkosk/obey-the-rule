@@ -85,4 +85,6 @@ engine.addRule({
   }},
 });
  
-engine.obey();
+const result = await engine.obey();
+
+console.log(JSON.stringify(result));
