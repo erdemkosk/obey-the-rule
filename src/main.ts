@@ -42,19 +42,19 @@ engine.addRule({
     and: [
       {
         fact: 'status',
-        operator: Operator.EQUAL,
+        operator: Operator.STRICT_EQUAL,
         value: 200
       }
     ],
     or: [
       {
         fact: 'vehicle',
-        operator: Operator.EQUAL,
+        operator: Operator.STRICT_EQUAL,
         value: 'Bike'
       },
       {
         fact: 'vehicle',
-        operator: Operator.EQUAL,
+        operator: Operator.STRICT_EQUAL,
         value: 'Car'
       }
     ]
@@ -74,7 +74,7 @@ engine.addRule({
     and: [
       {
         fact: 'status',
-        operator: Operator.EQUAL,
+        operator: Operator.STRICT_EQUAL,
         value: 400
       }
     ],

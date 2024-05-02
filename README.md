@@ -8,13 +8,56 @@ and: This key indicates that all specified conditions must be met simultaneously
 or: This key indicates that at least one condition in the list must be true. When or is used, the expression is considered true if at least one condition in the list evaluates to true. Even if all other conditions are false, as long as one condition is true, the entire expression is true.
 These keys are used to specify complex conditions. For example, they can be used to define a rule that must meet a specific condition and at the same time meet another condition or meet any of several other conditions. This allows rules to accommodate a wide range of scenarios.
 
+### Operator Types
+
+```typescript
+export enum Operator {
+  /** Strict equal operator, checks if the values are exactly equal using strict comparison (===). */
+  STRICT_EQUAL = 'strictEqual',
+
+  /** Strict not equal operator, checks if the values are not equal using strict comparison (!==). */
+  STRICT_NOT_EQUAL = 'strictNotEqual',
+
+  /** Loose equal operator, checks if the values are equal using loose comparison (==). */
+  LOOSE_EQUAL = 'looseEqual',
+
+  /** Loose not equal operator, checks if the values are not equal using loose comparison (!=). */
+  LOOSE_NOT_EQUAL = 'looseNotEqual',
+
+  /** Greater than operator, checks if the value is greater than the comparison value. */
+  GREATER_THAN = 'greaterThan',
+
+  /** Less than operator, checks if the value is less than the comparison value. */
+  LESS_THAN = 'lessThan',
+
+  /** Greater than or equal operator, checks if the value is greater than or equal to the comparison value. */
+  GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
+
+  /** Less than or equal operator, checks if the value is less than or equal to the comparison value. */
+  LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
+
+  /** Contains operator, checks if the value contains the comparison value. */
+  CONTAINS = 'contains',
+
+  /** Not contains operator, checks if the value does not contain the comparison value. */
+  NOT_CONTAINS = 'notContains',
+
+  /** Starts with operator, checks if the value starts with the comparison value. */
+  STARTS_WITH = 'startsWith',
+
+  /** Ends with operator, checks if the value ends with the comparison value. */
+  ENDS_WITH = 'endsWith'
+}
+
+```
+
 ## Warning
 
 This project is currently in an early development stage
 
 ## License
 
-Licensed under the APLv2. See the [LICENSE](https://github.com/erdemkosk/obey-the-rule/blob/main/LICENSE) file for details.
+Licensed under the APLv2. See the [LICENSE](https://github.com/erdemkosk/obey-the-rule/blob/master/LICENSE) file for details.
 
 ## Example Usage
 ```typescript
@@ -64,19 +107,19 @@ engine.addRule({
     and: [
       {
         fact: 'status',
-        operator: Operator.EQUAL,
+        operator: Operator.STRICT_EQUAL,
         value: 200
       }
     ],
     or: [
       {
         fact: 'vehicle',
-        operator: Operator.EQUAL,
+        operator: Operator.STRICT_EQUAL,
         value: 'Bike'
       },
       {
         fact: 'vehicle',
-        operator: Operator.EQUAL,
+        operator: Operator.STRICT_EQUAL,
         value: 'Car'
       }
     ]
@@ -96,7 +139,7 @@ engine.addRule({
     and: [
       {
         fact: 'status',
-        operator: Operator.EQUAL,
+        operator: Operator.STRICT_EQUAL,
         value: 400
       }
     ],
@@ -109,7 +152,7 @@ engine.addRule({
  
 engine.obey();
 
-// '{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"equal","value":200}],"or":[{"fact":"vehicle","operator":"equal","value":"Bike"},{"fact":"vehicle","operator":"equal","value":"Car"}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}}' rule with success . Rule is worked!
-//'{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"equal","value":400}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}}' rule with failed . Rule condition is not match!
+// '{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":200}],"or":[{"fact":"vehicle","operator":"strictEqual","value":"Bike"},{"fact":"vehicle","operator":"strictEqual","value":"Car"}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}}' rule with success . Rule is worked!
+//'{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":400}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}}' rule with failed . Rule condition is not match!
 
 ```

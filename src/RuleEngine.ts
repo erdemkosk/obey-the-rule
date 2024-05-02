@@ -4,32 +4,52 @@ import { Condition } from "./ICondition.js";
 import { Action } from "./IAction.js";
 import { Operator } from "./Operator.js";
 
+/**
+ * Rule engine class to manage and execute rules.
+ */
 export class RuleEngine {
     rules: Rule[];
     functions: any;
   
+    /**
+     * Creates an instance of a RuleEngine.
+     * @param {any} functions - An object containing functions that can be called by the rule engine.
+     */
     constructor(functions: any) {
       this.rules = [];
       this.functions = functions;
     }
   
+    /**
+     * Adds a rule to the rule engine.
+     * @param {Rule} rule - The rule to add.
+     */
     public addRule(rule: Rule) : void {
       this.rules.push(rule);
     }
   
+    /**
+     * Evaluates all added rules in sequence and executes corresponding actions based on rule conditions.
+     */
     public async obey() : Promise<void> {
       for (const rule of this.rules) {
         const beforeResult = await this.callFunction(rule.before);
         if (this.evaluateConditions(rule.conditions, beforeResult)) {
-          this.callFunction(rule.after,  beforeResult);
-          console.log(`'${JSON.stringify(rule)}' rule with success . Rule is worked!`);
+          await this.callFunction(rule.after, beforeResult);
+          console.log(`'${JSON.stringify(rule)}' rule succeeded. Rule is executed!`);
         }
         else {
-          console.log(`'${JSON.stringify(rule)}' rule with failed . Rule condition is not match!`);
+          console.log(`'${JSON.stringify(rule)}' rule failed. Rule condition did not match!`);
         }
       }
     }
   
+    /**
+     * Evaluates the conditions of a rule.
+     * @param {Rule['conditions']} conditions - The conditions to evaluate.
+     * @param {any} value - The result from the 'before' function, used for condition evaluation.
+     * @returns {boolean} - True if conditions are met, otherwise false.
+     */
     private evaluateConditions(conditions: Rule['conditions'], value?: any): boolean {
       let status = false;
       
@@ -44,20 +64,52 @@ export class RuleEngine {
       return status;
     }
     
+    /**
+     * Evaluates a single condition against the provided value.
+     * @param {Condition} condition - The condition to evaluate.
+     * @param {any} value - The value to check the condition against.
+     * @returns {boolean} - True if the condition is met, otherwise false.
+     */
     private evaluateSingleCondition(condition: Condition, value?: any): boolean {
       switch (condition.operator) {
-        case Operator.EQUAL:
+        case Operator.LOOSE_EQUAL:
+          return value[condition.fact] == condition.value;
+        case Operator.STRICT_EQUAL:
           return value[condition.fact] === condition.value;
-        case Operator.NOT_EQUAL:
+        case Operator.LOOSE_NOT_EQUAL:
+          return value[condition.fact] != condition.value;
+        case Operator.STRICT_NOT_EQUAL:
           return value[condition.fact] !== condition.value;
+        case Operator.GREATER_THAN:
+          return value[condition.fact] > condition.value;
+        case Operator.LESS_THAN:
+          return value[condition.fact] < condition.value;
+        case Operator.GREATER_THAN_OR_EQUAL:
+          return value[condition.fact] >= condition.value;
+        case Operator.LESS_THAN_OR_EQUAL:
+          return value[condition.fact] <= condition.value;
+        case Operator.CONTAINS:
+          return value[condition.fact].includes(condition.value);
+        case Operator.NOT_CONTAINS:
+          return !value[condition.fact].includes(condition.value);
+        case Operator.STARTS_WITH:
+          return value[condition.fact].startsWith(condition.value);
+        case Operator.ENDS_WITH:
+          return value[condition.fact].endsWith(condition.value);
         default:
           return false;
       }
     }
+
   
+    /**
+     * Calls a function defined in the functions object.
+     * @param {Action} action - The action to perform which includes the function name and parameters.
+     * @param {any} beforeResult - The result from the 'before' function that can be passed to the 'after' function.
+     * @returns {Promise<any>} - The result of the function call.
+     */
     private async callFunction(action: Action, beforeResult?: any) : Promise<any> {
       if (action.func in this.functions && typeof this.functions[action.func] === 'function') {
-       
         return await this.functions[action.func](action.params, beforeResult);
       } else {
         console.error(`Function '${action.func}' not found or not a function.`);
