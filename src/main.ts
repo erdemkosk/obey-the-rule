@@ -52,10 +52,13 @@ class RuleEngine {
 
   async evaluateFacts() : Promise<void> {
     for (const rule of this.rules) {
-      const beforeResult = await this.callFunction(rule.before, {});
+      const beforeResult = await this.callFunction(rule.before);
       if (this.evaluateConditions(rule.conditions, beforeResult)) {
         this.callFunction(rule.after,  beforeResult);
-        console.log(`Function '${JSON.stringify(rule)}' calling with success . Rule is worked!`);
+        console.log(`'${JSON.stringify(rule)}' rule with success . Rule is worked!`);
+      }
+      else {
+        console.log(`'${JSON.stringify(rule)}' rule with failed . Rule condition is not match!`);
       }
     }
   }
@@ -85,23 +88,23 @@ class RuleEngine {
     }
   }
 
-  async callFunction(action: Action, facts: object, beforeResult?: any) {
+  async callFunction(action: Action, beforeResult?: any) : Promise<any> {
     if (action.func in functions && typeof functions[action.func] === 'function') {
      
-      return await functions[action.func](facts, action.params, beforeResult);
+      return await functions[action.func](action.params, beforeResult);
     } else {
       console.error(`Function '${action.func}' not found or not a function.`);
     }
   }
-  
 }
 
 // Example usage:
 const engine = new RuleEngine();
 
+//success rule example
 engine.addRule({
   before: {func : 'getCourier'  , params: {
-    message: 'courier is olay'
+    courierId: '6633d4699c759c778ab5b399'
   }},
   conditions: {
     and: [
@@ -130,8 +133,30 @@ engine.addRule({
   }},
 });
 
-export async function getCourier(_facts: object): Promise<any> {
+//failed rule example
+engine.addRule({
+  before: {func : 'getCourier'  , params: {
+    courierId: '6633d4699c759c778ab5b399'
+  }},
+  conditions: {
+    and: [
+      {
+        fact: 'status',
+        operator: Operator.EQUAL,
+        value: 400
+      }
+    ],
+  },
+  after: {func : 'logCourierInfo'  , params: {
+    message: 'Rule work with success!',
+    success: true,
+  }},
+});
+
+
+export async function getCourier(params : any): Promise<any> {
   return {
+    id: params?.courierId,
     status: 200,
     vehicle: 'Bike',
     courierInfo: {
