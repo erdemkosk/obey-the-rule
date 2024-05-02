@@ -8,7 +8,6 @@ const functions = {
 };
 
 export async function getCourier(params : any): Promise<any> {
-  throw new Error('Before')
   return {
     id: params?.courierId,
     status: 200,

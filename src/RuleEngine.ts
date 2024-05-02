@@ -71,39 +71,60 @@ export class RuleEngine {
      * @returns {boolean} - True if the condition is met, otherwise false.
      */
     private evaluateSingleCondition(condition: Condition, value?: any): boolean {
-      if(!value){
-        return false;
-      }
-
-      switch (condition.operator) {
-        case Operator.LOOSE_EQUAL:
-          return value[condition.fact] == condition.value;
-        case Operator.STRICT_EQUAL:
-          return value[condition.fact] === condition.value;
-        case Operator.LOOSE_NOT_EQUAL:
-          return value[condition.fact] != condition.value;
-        case Operator.STRICT_NOT_EQUAL:
-          return value[condition.fact] !== condition.value;
-        case Operator.GREATER_THAN:
-          return value[condition.fact] > condition.value;
-        case Operator.LESS_THAN:
-          return value[condition.fact] < condition.value;
-        case Operator.GREATER_THAN_OR_EQUAL:
-          return value[condition.fact] >= condition.value;
-        case Operator.LESS_THAN_OR_EQUAL:
-          return value[condition.fact] <= condition.value;
-        case Operator.CONTAINS:
-          return value[condition.fact].includes(condition.value);
-        case Operator.NOT_CONTAINS:
-          return !value[condition.fact].includes(condition.value);
-        case Operator.STARTS_WITH:
-          return value[condition.fact].startsWith(condition.value);
-        case Operator.ENDS_WITH:
-          return value[condition.fact].endsWith(condition.value);
-        default:
+      if (!value) {
           return false;
       }
-    }
+  
+      switch (condition.operator) {
+          case Operator.LOOSE_EQUAL:
+              return value[condition.fact] == condition.value;
+          case Operator.STRICT_EQUAL:
+              return value[condition.fact] === condition.value;
+          case Operator.LOOSE_NOT_EQUAL:
+              return value[condition.fact] != condition.value;
+          case Operator.STRICT_NOT_EQUAL:
+              return value[condition.fact] !== condition.value;
+          case Operator.GREATER_THAN:
+              return value[condition.fact] > condition.value;
+          case Operator.LESS_THAN:
+              return value[condition.fact] < condition.value;
+          case Operator.GREATER_THAN_OR_EQUAL:
+              return value[condition.fact] >= condition.value;
+          case Operator.LESS_THAN_OR_EQUAL:
+              return value[condition.fact] <= condition.value;
+          case Operator.CONTAINS:
+              if (Array.isArray(value[condition.fact])) {
+                  return value[condition.fact].includes(condition.value);
+              } else if (typeof value[condition.fact] === 'string') {
+                  return value[condition.fact].includes(condition.value);
+              } else {
+                  return false;
+              }
+          case Operator.NOT_CONTAINS:
+              if (Array.isArray(value[condition.fact])) {
+                  return !value[condition.fact].includes(condition.value);
+              } else if (typeof value[condition.fact] === 'string') {
+                  return !value[condition.fact].includes(condition.value);
+              } else {
+                  return false;
+              }
+          case Operator.STARTS_WITH:
+              if (typeof value[condition.fact] === 'string') {
+                  return value[condition.fact].startsWith(condition.value);
+              } else {
+                  return false;
+              }
+          case Operator.ENDS_WITH:
+              if (typeof value[condition.fact] === 'string') {
+                  return value[condition.fact].endsWith(condition.value);
+              } else {
+                  return false;
+              }
+          default:
+              return false;
+      }
+  }
+  
 
   
     /**
