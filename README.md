@@ -107,4 +107,7 @@ engine.addRule({
  
 engine.evaluateFacts();
 
+// '{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"equal","value":200}],"or":[{"fact":"vehicle","operator":"equal","value":"Bike"},{"fact":"vehicle","operator":"equal","value":"Car"}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}}' rule with success . Rule is worked!
+//'{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"equal","value":400}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}}' rule with failed . Rule condition is not match!
+
 ```
