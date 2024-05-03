@@ -9,6 +9,8 @@
     "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "alwaysStrict": true,
+    "declaration": true,
+    "downlevelIteration": true,
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
@@ -20,5 +22,6 @@
     "resolveJsonModule": true, 
     "esModuleInterop": true 
   },
-  "include": ["src/**/*", "__tests__/**/*", "examples/**/*", "examples/**/*.json"]
+  "include": ["src/**/*", "examples/**/*", "examples/**/*.json"],
+  "exclude": ["node_modules", "__tests__/**/*"]
 }

@@ -199,6 +199,3 @@ export class RuleEngine {
     
   }
 }
-
-export { Operator };
-export { Result };

@@ -1,4 +1,4 @@
-import { RuleEngine, Operator } from "../src/RuleEngine.js";
+import { Operator, RuleEngine } from "../src/index.js";
 
 describe('Rule Engine', () => {
   let ruleEngine;

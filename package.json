@@ -1,6 +1,6 @@
 {
   "name": "obey-the-rule",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A lightweight rule engine implemented in TypeScript for managing conditional logic and automating decision-making processes.",
   "type": "module",
   "engines": {
@@ -22,14 +22,14 @@
     "typescript": "~5.4"
   },
   "scripts": {
-    "start": "node build/src/main.js",
+    "start": "node build/src/index.js",
     "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
     "build": "tsc -p tsconfig.json",
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "npm run clean && tsc -p tsconfig.release.json",
     "lint": "eslint . --ext .ts --ext .mts",
-    "test": "jest --coverage",
+    "test": "jest --coverage --passWithNoTests",
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "jest --watch"
   },

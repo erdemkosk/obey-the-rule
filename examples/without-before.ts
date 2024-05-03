@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {RuleEngine , Operator, Result} from "../src/RuleEngine.js";
+import { RuleEngine, Operator, Result } from "../src/index.js";
+
+
 
 const functions = {
   helloWorld: helloWorld
