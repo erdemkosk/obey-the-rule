@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "node16",
+    "module": "es2022",
     "lib": ["ES2022"],
-    "moduleResolution": "node16",
+    "moduleResolution": "node",
     "rootDir": ".",
     "outDir": "build",
     "allowSyntheticDefaultImports": true,
@@ -22,6 +22,6 @@
     "resolveJsonModule": true, 
     "esModuleInterop": true 
   },
-  "include": ["src/**/*", "examples/**/*", "examples/**/*.json"],
+  "include": ["src/**/*", "__tests__/**/*", "examples/**/*", "examples/**/*.json"],
   "exclude": ["node_modules", "__tests__/**/*"]
 }
