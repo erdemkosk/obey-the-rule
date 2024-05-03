@@ -1,6 +1,6 @@
 {
   "name": "obey-the-rule",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A lightweight rule engine implemented in TypeScript for managing conditional logic and automating decision-making processes.",
   "type": "module",
   "engines": {
