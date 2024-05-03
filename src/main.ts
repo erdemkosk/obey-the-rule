@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {RuleEngine , Operator} from "./RuleEngine.js";
+import {RuleEngine , Operator, Result} from "./RuleEngine.js";
 
 const functions = {
   getCourier: getCourier,
@@ -85,6 +85,6 @@ engine.addRule({
   }},
 });
  
-const result = await engine.obey();
+const result : Result[] = await engine.obey();
 
 console.log(JSON.stringify(result));
