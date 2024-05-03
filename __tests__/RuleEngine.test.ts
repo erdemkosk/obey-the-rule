@@ -245,6 +245,18 @@ describe('Rule Engine', () => {
     expect(results[0].satisfied).toBe(true);
   });
   
+  it('adds multiple rules correctly', () => {
+    const rules = [
+      { before: 'beforeFunction1', conditions: { and: [] }, after: 'afterFunction1' },
+      { before: 'beforeFunction2', conditions: { and: [] }, after: 'afterFunction2' }
+    ];
+  
+    ruleEngine.addRules(rules);
+  
+    rules.forEach(rule => {
+      expect(ruleEngine.rules).toContainEqual(rule);
+    });
+  });
   
   
 });

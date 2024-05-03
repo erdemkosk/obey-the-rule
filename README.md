@@ -151,6 +151,58 @@ engine.addRule({
     success: true,
   }},
 });
+
+// Adding multiple rules at once
+engine.addRules([{
+  before: {func : 'getCourier'  , params: {
+    courierId: '6633d4699c759c778ab5b399'
+  }},
+  conditions: {
+    and: [
+      {
+        fact: 'status',
+        operator: Operator.STRICT_EQUAL,
+        value: 200
+      }
+    ],
+    or: [
+      {
+        fact: 'vehicle',
+        operator: Operator.STRICT_EQUAL,
+        value: 'Bike'
+      },
+      {
+        fact: 'vehicle',
+        operator: Operator.STRICT_EQUAL,
+        value: 'Car'
+      }
+    ]
+  },
+  after: {func : 'logCourierInfo'  , params: {
+    message: 'Rule work with success!',
+    success: true,
+  }},
+},
+
+{
+  before: {func : 'getCourier'  , params: {
+    courierId: '6633d4699c759c778ab5b399'
+  }},
+  conditions: {
+    and: [
+      {
+        fact: 'status',
+        operator: Operator.STRICT_EQUAL,
+        value: 400
+      }
+    ],
+  },
+  after: {func : 'logCourierInfo'  , params: {
+    message: 'Rule work with success!',
+    success: true,
+  }},
+}
+])
  
 const result : Result[] = await engine.obey();
 
