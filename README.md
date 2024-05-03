@@ -15,6 +15,21 @@ These keys are used to specify complex conditions. For example, they can be used
 ```bash
 npm i obey-the-rule
 ```
+It is currently supported esm and common js.
+
+### Usage
+
+Esm:
+
+```typescript
+import { RuleEngine, Operator } from 'obey-the-rule';
+```
+
+Common Js:
+
+```typescript
+const { RuleEngine, Operator } = require("obey-the-rule");
+```
 
 ### Operator Types
 
