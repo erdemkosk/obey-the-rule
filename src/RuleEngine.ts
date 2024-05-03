@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Rule } from "./IRule.js";
 import { Condition } from "./ICondition.js";
@@ -29,6 +30,7 @@ export class RuleEngine {
     this.rules.push(rule);
   }
 
+
    /**
    * Adds a rules to the rule engine.
    * @param {Rule[]} rules - The rules to add.
@@ -38,6 +40,8 @@ export class RuleEngine {
   }
 
   /**
+
+  /**
    * Evaluates all added rules in sequence and returns an array of objects containing
    * information about whether each rule's conditions are met and the reason if not.
    * @returns {Promise<Result[]>} - An array of objects containing information
@@ -45,33 +49,42 @@ export class RuleEngine {
    */
   public async obey(): Promise<Result[]> {
     const results: Result[] = [];
-
+  
     for (const rule of this.rules) {
-      try {
-        const beforeResult = await this.callFunction(rule.before);
-        const satisfied = this.evaluateConditions(rule.conditions, beforeResult);
-        const result = {
-          rule,
-          satisfied,
-          reason: satisfied ? undefined : "Conditions not met",
-        };
-  
-        if (satisfied) {
-          await this.callFunction(rule.after, beforeResult);
-        }
-  
-        results.push(result);
-      } catch (error) {
-        results.push({
-          rule,
-          satisfied: false,
-          reason: `An error occurred: ${error.message}`,
-        });
-      }
- 
+      const result = await this.obeyRule(rule);
+      results.push(result);
     }
-
+  
     return results;
+  }
+  
+  private async obeyRule(rule: Rule): Promise<Result> {
+    try {
+      let beforeResult: any = null;
+      
+      if (rule.before) {
+        beforeResult = await this.callFunction(rule.before);
+      }
+  
+      const satisfied = this.evaluateConditions(rule.conditions, beforeResult);
+      const result: Result = {
+        rule,
+        satisfied,
+        reason: satisfied ? undefined : "Conditions not met",
+      };
+  
+      if (satisfied && rule.after) {
+        await this.callFunction(rule.after, beforeResult);
+      }
+  
+      return result;
+    } catch (error) {
+      return {
+        rule,
+        satisfied: false,
+        reason: `An error occurred: ${error.message}`,
+      };
+    }
   }
 
   /**
@@ -108,54 +121,63 @@ export class RuleEngine {
    * @returns {boolean} - True if the condition is met, otherwise false.
    */
   private evaluateSingleCondition(condition: Condition, value?: any): boolean {
-    if (!value) {
-      throw Error(`Value does not contain '${condition.value}'.`);
-    }
-
-    switch (condition.operator) {
-      case Operator.LOOSE_EQUAL:
-        return value[condition.fact] == condition.value;
-      case Operator.STRICT_EQUAL:
-        return value[condition.fact] === condition.value;
-      case Operator.LOOSE_NOT_EQUAL:
-        return value[condition.fact] != condition.value;
-      case Operator.STRICT_NOT_EQUAL:
-        return value[condition.fact] !== condition.value;
-      case Operator.GREATER_THAN:
-        return value[condition.fact] > condition.value;
-      case Operator.LESS_THAN:
-        return value[condition.fact] < condition.value;
-      case Operator.GREATER_THAN_OR_EQUAL:
-        return value[condition.fact] >= condition.value;
-      case Operator.LESS_THAN_OR_EQUAL:
-        return value[condition.fact] <= condition.value;
+   
+      if (!value && !condition.constant) {
+        throw Error(`Value does not contain '${condition.fact}'.`);
+      }
+  
+      let factValue;
+      if (condition.constant) {
+        factValue = condition.constant;
+      } else {
+        factValue = value[condition.fact];
+      }
+  
+      switch (condition.operator) {
+        case Operator.LOOSE_EQUAL:
+          return factValue == condition.value;
+        case Operator.STRICT_EQUAL:
+          return factValue === condition.value;
+        case Operator.LOOSE_NOT_EQUAL:
+          return factValue != condition.value;
+        case Operator.STRICT_NOT_EQUAL:
+          return factValue !== condition.value;
+        case Operator.GREATER_THAN:
+          return factValue > condition.value;
+        case Operator.LESS_THAN:
+          return factValue < condition.value;
+        case Operator.GREATER_THAN_OR_EQUAL:
+          return factValue >= condition.value;
+        case Operator.LESS_THAN_OR_EQUAL:
+          return factValue <= condition.value;
         case Operator.CONTAINS:
-          if (Array.isArray(value[condition.fact]) || typeof value[condition.fact] === "string") {
-            return value[condition.fact].includes(condition.value);
+          if (Array.isArray(factValue) || typeof factValue === "string") {
+            return factValue.includes(condition.value);
           } else {
             throw new Error(`Invalid data type for ${condition.fact}. Expected array or string.`);
           }
         case Operator.NOT_CONTAINS:
-          if (Array.isArray(value[condition.fact]) || typeof value[condition.fact] === "string") {
-            return !value[condition.fact].includes(condition.value);
+          if (Array.isArray(factValue) || typeof factValue === "string") {
+            return !factValue.includes(condition.value);
           } else {
             throw new Error(`Invalid data type for ${condition.fact}. Expected array or string.`);
           }
         case Operator.STARTS_WITH:
-          if (typeof value[condition.fact] === "string") {
-            return value[condition.fact].startsWith(condition.value);
+          if (typeof factValue === "string") {
+            return factValue.startsWith(condition.value);
           } else {
             throw new Error(`Invalid data type for ${condition.fact}. Expected string.`);
           }
         case Operator.ENDS_WITH:
-          if (typeof value[condition.fact] === "string") {
-            return value[condition.fact].endsWith(condition.value);
+          if (typeof factValue === "string") {
+            return factValue.endsWith(condition.value);
           } else {
             throw new Error(`Invalid data type for ${condition.fact}. Expected string.`);
           }
         default:
           throw new Error(`Invalid operator: ${condition.operator}`);
-      }
+      
+    }
   }
 
   /**

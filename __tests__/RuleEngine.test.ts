@@ -258,5 +258,16 @@ describe('Rule Engine', () => {
     });
   });
   
+  it('can run with consts not facts and dont need to before', async () => {
+    const fakeConst = 'This';
+
+    const rule = {
+      conditions: { and: [{ constant: fakeConst, operator: Operator.STRICT_EQUAL, value: 'This' }] },
+      after: { func: 'afterFunction' },
+    };
+    ruleEngine.addRule(rule);
+    const results = await ruleEngine.obey();
+    expect(results[0].satisfied).toBe(true);
+  });
   
 });
