@@ -10,6 +10,12 @@ and: This key indicates that all specified conditions must be met simultaneously
 or: This key indicates that at least one condition in the list must be true. When or is used, the expression is considered true if at least one condition in the list evaluates to true. Even if all other conditions are false, as long as one condition is true, the entire expression is true.
 These keys are used to specify complex conditions. For example, they can be used to define a rule that must meet a specific condition and at the same time meet another condition or meet any of several other conditions. This allows rules to accommodate a wide range of scenarios.
 
+### How to install
+
+```bash
+npm i obey-the-rule
+```
+
 ### Operator Types
 
 ```typescript
