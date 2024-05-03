@@ -1,20 +1,20 @@
 {
   "name": "obey-the-rule",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A lightweight rule engine implemented in TypeScript for managing conditional logic and automating decision-making processes.",
   "type": "module",
-  "types": "./build/index.d.ts",
-  "module": "./build/index.js",
-  "main": "build/index.js",
+  "main": "./build/index.cjs", 
+  "module": "./build/index.mjs", 
+  "types": "./build/index.d.ts",  
   "exports": {
     ".": {
-      "require": "./build/index.js",
-      "import": "./build/index.mjs",
+      "require": "./build/index.cjs",  
+      "import": "./build/index.mjs",  
       "types": "./build/index.d.ts"
     }
   },
   "engines": {
-    "node": ">= 12.0"
+    "node": ">=12.0"
   },
   "devDependencies": {
     "@types/jest": "~29.5",
@@ -34,8 +34,9 @@
   },
   "scripts": {
     "start": "node build/index.js",
+    "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
-    "build": "tsup",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "watch": "npm run build -- --watch src",
     "prepublishOnly": "npm run build",
     "lint": "eslint . --ext .ts --ext .mts",
