@@ -152,9 +152,8 @@ engine.addRule({
   }},
 });
  
-engine.obey();
+const result : Result[] = await engine.obey();
 
-// '{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":200}],"or":[{"fact":"vehicle","operator":"strictEqual","value":"Bike"},{"fact":"vehicle","operator":"strictEqual","value":"Car"}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}}' rule with success . Rule is worked!
-//'{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":400}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}}' rule with failed . Rule condition is not match!
+//[{"rule":{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":200}],"or":[{"fact":"vehicle","operator":"strictEqual","value":"Bike"},{"fact":"vehicle","operator":"strictEqual","value":"Car"}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}},"satisfied":true},{"rule":{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":400}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}},"satisfied":false,"reason":"Conditions not met"}]
 
 ```
