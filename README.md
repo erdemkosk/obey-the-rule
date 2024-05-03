@@ -1,4 +1,4 @@
-# Obey The Rule
+# 🫡 Obey The Rule
 
 ![Logo](https://i.imgur.com/bC7sXDJ.png)
 
@@ -61,7 +61,50 @@ This project is currently in an early development stage
 
 Licensed under the APLv2. See the [LICENSE](https://github.com/erdemkosk/obey-the-rule/blob/master/LICENSE) file for details.
 
-## Example Usage
+### Basic Usage With constant
+```typescript
+// Example usage:
+import {RuleEngine , Operator} from "obey-the-rule";
+const functions = {
+  helloWorld: helloWorld
+};
+
+export async function helloWorld() : Promise<any> {
+  console.log('Hello World')
+}
+
+const testValue = 'This';
+
+// Example usage:
+const engine = new RuleEngine(functions);
+
+//success rule example
+engine.addRule({
+  conditions: {
+    and: [
+      {
+        constant: testValue,
+        operator: Operator.STRICT_EQUAL,
+        value: 'This'
+      }
+    ],
+  },
+  after: {func : 'helloWorld'  , params: {
+    message: 'Rule work with success!',
+    success: true,
+  }},
+});
+
+ 
+const result : Result[] = await engine.obey();
+
+console.log(JSON.stringify(result));
+
+//Hello World
+//[{"rule":{"conditions":{"and":[{"constant":"This","operator":"strictEqual","value":"This"}]},"after":{"func":"helloWorld","params":{"message":"Rule work with success!","success":true}}},"satisfied":true}]
+```
+
+### Example Usage Add rule and Add rules
 ```typescript
 const functions = {
   getCourier: getCourier,
@@ -209,3 +252,5 @@ const result : Result[] = await engine.obey();
 //[{"rule":{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":200}],"or":[{"fact":"vehicle","operator":"strictEqual","value":"Bike"},{"fact":"vehicle","operator":"strictEqual","value":"Car"}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}},"satisfied":true},{"rule":{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":400}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}},"satisfied":false,"reason":"Conditions not met"}]
 
 ```
+
+For more detail you can see [examples](https://github.com/erdemkosk/obey-the-rule/blob/master/examples) 🤓
