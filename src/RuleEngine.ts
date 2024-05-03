@@ -162,7 +162,7 @@ export class RuleEngine {
         action.func in this.functions &&
         typeof this.functions[action.func] === "function"
       ) {
-        return await this.functions[action.func](action.params, beforeResult);
+        return await this.functions[action.func](beforeResult, action.params );
       } else {
         throw Error(`Function '${action.func}' not found or not a function.`);
       }
