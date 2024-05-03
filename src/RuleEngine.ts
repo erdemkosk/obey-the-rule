@@ -30,7 +30,18 @@ export class RuleEngine {
     this.rules.push(rule);
   }
 
-    /**
+
+   /**
+   * Adds a rules to the rule engine.
+   * @param {Rule[]} rules - The rules to add.
+   */
+   public addRules(rules: Rule[]): void {
+    this.rules.push(...rules);
+  }
+
+  /**
+
+  /**
    * Evaluates all added rules in sequence and returns an array of objects containing
    * information about whether each rule's conditions are met and the reason if not.
    * @returns {Promise<Result[]>} - An array of objects containing information

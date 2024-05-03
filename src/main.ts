@@ -33,8 +33,7 @@ export async function logCourierInfo(courier : any , params: any) : Promise<any>
 // Example usage:
 const engine = new RuleEngine(functions);
 
-//success rule example
-engine.addRule({
+engine.addRules([{
   before: {func : 'getCourier'  , params: {
     courierId: '6633d4699c759c778ab5b399'
   }},
@@ -63,10 +62,9 @@ engine.addRule({
     message: 'Rule work with success!',
     success: true,
   }},
-});
+},
 
-//failed rule example
-engine.addRule({
+{
   before: {func : 'getCourier'  , params: {
     courierId: '6633d4699c759c778ab5b399'
   }},
@@ -83,8 +81,9 @@ engine.addRule({
     message: 'Rule work with success!',
     success: true,
   }},
-});
- 
+}
+])
+
 const result : Result[] = await engine.obey();
 
 console.log(JSON.stringify(result));
