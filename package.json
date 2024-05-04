@@ -1,6 +1,10 @@
 {
   "name": "obey-the-rule",
-  "version": "0.0.15",
+  "version": "0.0.16",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erdemkosk/obey-the-rule.git"
+  },
   "description": "A lightweight rule engine implemented in TypeScript for managing conditional logic and automating decision-making processes.",
   "type": "module",
   "main": "./build/index.cjs",

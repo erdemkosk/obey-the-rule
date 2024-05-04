@@ -71,6 +71,18 @@ export enum Operator {
 
   /** Ends with operator, checks if the value ends with the comparison value. */
   ENDS_WITH = 'endsWith',
+
+  /** Regular expression match operator, checks if the value matches the provided regular expression. */
+  REGEX_MATCH = 'regexMatch',
+
+  /** Regular expression not match operator, checks if the value does not match the provided regular expression. */
+  REGEX_NOT_MATCH = 'regexNotMatch',
+
+  /** Check inside of value operator. It will check array is containts this value */
+  ARRAY_CONTAINS = 'arrayContains',
+
+  /** Array operator it will foreach all values */
+  EACH = 'each',
 }
 ```
 
@@ -303,6 +315,41 @@ engine.addRules([
 const result: Result[] = await engine.obey();
 
 //[{"rule":{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":200}],"or":[{"fact":"vehicle","operator":"strictEqual","value":"Bike"},{"fact":"vehicle","operator":"strictEqual","value":"Car"}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}},"satisfied":true},{"rule":{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":400}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}},"satisfied":false,"reason":"Conditions not met"}]
+```
+
+### Array and Inner Values
+
+$ it is represent current value
+
+```typescript
+engine.addRule({
+  before: {
+    func: 'getOrder',
+    params: {
+      orderId: '6633d4699c759c778ab5b399',
+    },
+  },
+  conditions: {
+    and: [
+      {
+        fact: 'basket.missingItems.array',
+        operator: Operator.EACH,
+        value: {
+          fact: '$',
+          operator: Operator.GREATER_THAN,
+          value: 0,
+        },
+      },
+    ],
+  },
+  after: {
+    func: 'logOrderInfo',
+    params: {
+      message: 'Rule work with success!',
+      success: true,
+    },
+  },
+});
 ```
 
 For more detail you can see [examples](https://github.com/erdemkosk/obey-the-rule/blob/master/examples) 🤓

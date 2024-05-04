@@ -8,6 +8,12 @@ describe('Rule Engine', () => {
       factValue: 10,
       message: 'Hello',
       array: ['fact'],
+      numberArray: [1, 2, 3, 4],
+      inner: {
+        inner2: {
+          inner3: 4,
+        },
+      },
     })),
     afterFunction: jest.fn(),
     functionWithError: jest.fn(() => {
@@ -369,5 +375,57 @@ describe('Rule Engine', () => {
     ruleEngine.addRule(rule);
     const results = await ruleEngine.obey();
     expect(results[0].satisfied).toBe(true);
+  });
+
+  it('can work with inner values', () => {
+    const rules = [
+      {
+        before: 'beforeFunction1',
+        conditions: {
+          and: [
+            {
+              fact: 'inner.inner2.inner3',
+              operator: Operator.STRICT_EQUAL,
+              value: 4,
+            },
+          ],
+        },
+        after: 'afterFunction1',
+      },
+    ];
+
+    ruleEngine.addRules(rules);
+
+    rules.forEach((rule) => {
+      expect(ruleEngine.rules).toContainEqual(rule);
+    });
+  });
+
+  it('can work with array values', () => {
+    const rules = [
+      {
+        before: 'beforeFunction1',
+        conditions: {
+          and: [
+            {
+              fact: 'numberArray',
+              operator: Operator.EACH,
+              value: {
+                fact: 'numberArray',
+                operator: Operator.GREATER_THAN,
+                value: 0,
+              },
+            },
+          ],
+        },
+        after: 'afterFunction1',
+      },
+    ];
+
+    ruleEngine.addRules(rules);
+
+    rules.forEach((rule) => {
+      expect(ruleEngine.rules).toContainEqual(rule);
+    });
   });
 });

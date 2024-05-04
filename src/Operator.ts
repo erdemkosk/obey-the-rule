@@ -50,4 +50,7 @@ export enum Operator {
 
   /** Check inside of value operator. It will check array is containts this value */
   ARRAY_CONTAINS = 'arrayContains',
+
+  /** Array operator it will foreach all values */
+  EACH = 'each',
 }

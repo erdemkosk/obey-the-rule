@@ -126,7 +126,10 @@ export class RuleEngine {
     }
 
     let factValue;
-    if (condition.constant) {
+
+    if (condition.fact === '$') {
+      factValue = value;
+    } else if (condition.constant) {
       factValue = condition.constant;
     } else {
       const factExpression = condition.fact.split('.');
@@ -208,6 +211,17 @@ export class RuleEngine {
             `Invalid data type for ${condition.fact}. Expected array.`,
           );
         }
+      case Operator.EACH:
+        if (Array.isArray(factValue)) {
+          return factValue.every((item) =>
+            this.evaluateSingleCondition(condition.value, item),
+          );
+        } else {
+          throw new Error(
+            `Invalid data type for ${condition.fact}. Expected array.`,
+          );
+        }
+
       default:
         throw new Error(`Invalid operator: ${condition.operator}`);
     }
