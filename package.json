@@ -1,11 +1,12 @@
 {
   "name": "obey-the-rule",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "A lightweight rule engine implemented in TypeScript for managing conditional logic and automating decision-making processes.",
   "type": "module",
   "main": "./build/index.cjs", 
   "module": "./build/index.js", 
   "types": "./build/index.d.ts",  
+  "keywords": ["rule engine", "condition", "action", "logic", "decision", "typescript"],
   "exports": {
     ".": {
       "require": "./build/index.cjs",  
