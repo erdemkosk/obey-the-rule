@@ -40,5 +40,14 @@ export enum Operator {
   STARTS_WITH = 'startsWith',
 
   /** Ends with operator, checks if the value ends with the comparison value. */
-  ENDS_WITH = 'endsWith'
+  ENDS_WITH = 'endsWith',
+
+  /** Regular expression match operator, checks if the value matches the provided regular expression. */
+  REGEX_MATCH = 'regexMatch',
+
+  /** Regular expression not match operator, checks if the value does not match the provided regular expression. */
+  REGEX_NOT_MATCH = 'regexNotMatch',
+
+  /** Check inside of value operator. It will check array is containts this value */
+  ARRAY_CONTAINS = 'arrayContains',
 }

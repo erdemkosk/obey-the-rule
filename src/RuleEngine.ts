@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Rule } from "./IRule.js";
-import { Condition } from "./ICondition.js";
-import { Action } from "./IAction.js";
-import { Operator } from "./Operator.js";
-import { Result } from "./IResult.js";
+import { Rule } from './IRule.js';
+import { Condition } from './ICondition.js';
+import { Action } from './IAction.js';
+import { Operator } from './Operator.js';
+import { Result } from './IResult.js';
+import _ from 'lodash';
 
 /**
  * Rule engine class to manage and execute rules.
@@ -30,12 +31,11 @@ export class RuleEngine {
     this.rules.push(rule);
   }
 
-
-   /**
+  /**
    * Adds a rules to the rule engine.
    * @param {Rule[]} rules - The rules to add.
    */
-   public addRules(rules: Rule[]): void {
+  public addRules(rules: Rule[]): void {
     this.rules.push(...rules);
   }
 
@@ -49,34 +49,34 @@ export class RuleEngine {
    */
   public async obey(): Promise<Result[]> {
     const results: Result[] = [];
-  
+
     for (const rule of this.rules) {
       const result = await this.obeyRule(rule);
       results.push(result);
     }
-  
+
     return results;
   }
-  
+
   private async obeyRule(rule: Rule): Promise<Result> {
     try {
       let beforeResult: any = null;
-      
+
       if (rule.before) {
         beforeResult = await this.callFunction(rule.before);
       }
-  
+
       const satisfied = this.evaluateConditions(rule.conditions, beforeResult);
       const result: Result = {
         rule,
         satisfied,
-        reason: satisfied ? undefined : "Conditions not met",
+        reason: satisfied ? undefined : 'Conditions not met',
       };
-  
+
       if (satisfied && rule.after) {
         await this.callFunction(rule.after, beforeResult);
       }
-  
+
       return result;
     } catch (error) {
       return {
@@ -94,20 +94,20 @@ export class RuleEngine {
    * @returns {boolean} - True if conditions are met, otherwise false.
    */
   private evaluateConditions(
-    conditions: Rule["conditions"],
-    value?: any
+    conditions: Rule['conditions'],
+    value?: any,
   ): boolean {
     let status = false;
 
-    if ("and" in conditions) {
+    if ('and' in conditions) {
       status = conditions.and.every((condition) =>
-        this.evaluateSingleCondition(condition, value)
+        this.evaluateSingleCondition(condition, value),
       );
     }
 
-    if ("or" in conditions) {
+    if ('or' in conditions) {
       status = conditions.or.some((condition) =>
-        this.evaluateSingleCondition(condition, value)
+        this.evaluateSingleCondition(condition, value),
       );
     }
 
@@ -121,63 +121,106 @@ export class RuleEngine {
    * @returns {boolean} - True if the condition is met, otherwise false.
    */
   private evaluateSingleCondition(condition: Condition, value?: any): boolean {
-   
-      if (!value && !condition.constant) {
-        throw Error(`Value does not contain '${condition.fact}'.`);
-      }
-  
-      let factValue;
-      if (condition.constant) {
-        factValue = condition.constant;
-      } else {
-        factValue = value[condition.fact];
-      }
-  
-      switch (condition.operator) {
-        case Operator.LOOSE_EQUAL:
-          return factValue == condition.value;
-        case Operator.STRICT_EQUAL:
-          return factValue === condition.value;
-        case Operator.LOOSE_NOT_EQUAL:
-          return factValue != condition.value;
-        case Operator.STRICT_NOT_EQUAL:
-          return factValue !== condition.value;
-        case Operator.GREATER_THAN:
-          return factValue > condition.value;
-        case Operator.LESS_THAN:
-          return factValue < condition.value;
-        case Operator.GREATER_THAN_OR_EQUAL:
-          return factValue >= condition.value;
-        case Operator.LESS_THAN_OR_EQUAL:
-          return factValue <= condition.value;
-        case Operator.CONTAINS:
-          if (Array.isArray(factValue) || typeof factValue === "string") {
-            return factValue.includes(condition.value);
-          } else {
-            throw new Error(`Invalid data type for ${condition.fact}. Expected array or string.`);
-          }
-        case Operator.NOT_CONTAINS:
-          if (Array.isArray(factValue) || typeof factValue === "string") {
-            return !factValue.includes(condition.value);
-          } else {
-            throw new Error(`Invalid data type for ${condition.fact}. Expected array or string.`);
-          }
-        case Operator.STARTS_WITH:
-          if (typeof factValue === "string") {
-            return factValue.startsWith(condition.value);
-          } else {
-            throw new Error(`Invalid data type for ${condition.fact}. Expected string.`);
-          }
-        case Operator.ENDS_WITH:
-          if (typeof factValue === "string") {
-            return factValue.endsWith(condition.value);
-          } else {
-            throw new Error(`Invalid data type for ${condition.fact}. Expected string.`);
-          }
-        default:
-          throw new Error(`Invalid operator: ${condition.operator}`);
-      
+    if (!value && !condition.constant) {
+      throw Error(`Value does not contain '${condition.fact}'.`);
     }
+
+    let factValue;
+    if (condition.constant) {
+      factValue = condition.constant;
+    } else {
+      const factExpression = condition.fact.split('.');
+      factValue = this.getValueFromFactExpression(factExpression, value);
+    }
+
+    switch (condition.operator) {
+      case Operator.LOOSE_EQUAL:
+        return factValue == condition.value;
+      case Operator.STRICT_EQUAL:
+        return factValue === condition.value;
+      case Operator.LOOSE_NOT_EQUAL:
+        return factValue != condition.value;
+      case Operator.STRICT_NOT_EQUAL:
+        return factValue !== condition.value;
+      case Operator.GREATER_THAN:
+        return factValue > condition.value;
+      case Operator.LESS_THAN:
+        return factValue < condition.value;
+      case Operator.GREATER_THAN_OR_EQUAL:
+        return factValue >= condition.value;
+      case Operator.LESS_THAN_OR_EQUAL:
+        return factValue <= condition.value;
+      case Operator.CONTAINS:
+        if (Array.isArray(factValue) || typeof factValue === 'string') {
+          return factValue.includes(condition.value);
+        } else {
+          throw new Error(
+            `Invalid data type for ${condition.fact}. Expected array or string.`,
+          );
+        }
+      case Operator.NOT_CONTAINS:
+        if (Array.isArray(factValue) || typeof factValue === 'string') {
+          return !factValue.includes(condition.value);
+        } else {
+          throw new Error(
+            `Invalid data type for ${condition.fact}. Expected array or string.`,
+          );
+        }
+      case Operator.STARTS_WITH:
+        if (typeof factValue === 'string') {
+          return factValue.startsWith(condition.value);
+        } else {
+          throw new Error(
+            `Invalid data type for ${condition.fact}. Expected string.`,
+          );
+        }
+      case Operator.ENDS_WITH:
+        if (typeof factValue === 'string') {
+          return factValue.endsWith(condition.value);
+        } else {
+          throw new Error(
+            `Invalid data type for ${condition.fact}. Expected string.`,
+          );
+        }
+      case Operator.REGEX_MATCH:
+        if (typeof factValue === 'string') {
+          const regex = new RegExp(condition.value);
+          return regex.test(factValue);
+        } else {
+          throw new Error(
+            `Invalid data type for ${condition.fact}. Expected string.`,
+          );
+        }
+      case Operator.REGEX_NOT_MATCH:
+        if (typeof factValue === 'string') {
+          const regex = new RegExp(condition.value);
+          return !regex.test(factValue);
+        } else {
+          throw new Error(
+            `Invalid data type for ${condition.fact}. Expected string.`,
+          );
+        }
+      case Operator.ARRAY_CONTAINS:
+        if (Array.isArray(factValue)) {
+          return factValue.some((item) => item === condition.value);
+        } else {
+          throw new Error(
+            `Invalid data type for ${condition.fact}. Expected array.`,
+          );
+        }
+      default:
+        throw new Error(`Invalid operator: ${condition.operator}`);
+    }
+  }
+
+  private getValueFromFactExpression(
+    factExpression: string[],
+    value: any,
+  ): any {
+    const path = factExpression.map((segment) =>
+      segment.replace(/\[(\d+)\]/g, '[$1]'),
+    );
+    return _.get(value, path.join('.'));
   }
 
   /**
@@ -187,15 +230,13 @@ export class RuleEngine {
    * @returns {Promise<any>} - The result of the function call.
    */
   private async callFunction(action: Action, beforeResult?: any): Promise<any> {
-   
-      if (
-        action.func in this.functions &&
-        typeof this.functions[action.func] === "function"
-      ) {
-        return await this.functions[action.func](beforeResult, action.params );
-      } else {
-        throw Error(`Function '${action.func}' not found or not a function.`);
-      }
-    
+    if (
+      action.func in this.functions &&
+      typeof this.functions[action.func] === 'function'
+    ) {
+      return await this.functions[action.func](beforeResult, action.params);
+    } else {
+      throw Error(`Function '${action.func}' not found or not a function.`);
+    }
   }
 }

@@ -1,4 +1,4 @@
 export interface Action {
-    func: string;
-    params: object;
-  }
+  func: string;
+  params: object;
+}

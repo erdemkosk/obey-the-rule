@@ -3,14 +3,21 @@
   "version": "0.0.13",
   "description": "A lightweight rule engine implemented in TypeScript for managing conditional logic and automating decision-making processes.",
   "type": "module",
-  "main": "./build/index.cjs", 
-  "module": "./build/index.js", 
-  "types": "./build/index.d.ts",  
-  "keywords": ["rule engine", "condition", "action", "logic", "decision", "typescript"],
+  "main": "./build/index.cjs",
+  "module": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "keywords": [
+    "rule engine",
+    "condition",
+    "action",
+    "logic",
+    "decision",
+    "typescript"
+  ],
   "exports": {
     ".": {
-      "require": "./build/index.cjs",  
-      "import": "./build/index.js",  
+      "require": "./build/index.cjs",
+      "import": "./build/index.js",
       "types": "./build/index.d.ts"
     }
   },
@@ -41,6 +48,7 @@
     "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
     "build": "tsup",
+    "local-build": "tsc",
     "watch": "npm run build -- --watch src",
     "prepublishOnly": "npm run build",
     "lint": "eslint . --ext .ts --ext .mts",
@@ -49,5 +57,8 @@
     "test:watch": "jest --watch"
   },
   "author": "Erdem Köşk <erdemkosk@gmail.com>",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }

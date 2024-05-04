@@ -15,6 +15,7 @@ These keys are used to specify complex conditions. For example, they can be used
 ```bash
 npm i obey-the-rule
 ```
+
 It is currently supported esm and common js.
 
 ### Usage
@@ -28,7 +29,7 @@ import { RuleEngine, Operator } from 'obey-the-rule';
 Common Js:
 
 ```typescript
-const { RuleEngine, Operator } = require("obey-the-rule");
+const { RuleEngine, Operator } = require('obey-the-rule');
 ```
 
 ### Operator Types
@@ -69,9 +70,8 @@ export enum Operator {
   STARTS_WITH = 'startsWith',
 
   /** Ends with operator, checks if the value ends with the comparison value. */
-  ENDS_WITH = 'endsWith'
+  ENDS_WITH = 'endsWith',
 }
-
 ```
 
 ## Warning
@@ -83,15 +83,16 @@ This project is currently in an early development stage
 Licensed under the APLv2. See the [LICENSE](https://github.com/erdemkosk/obey-the-rule/blob/master/LICENSE) file for details.
 
 ### Basic Usage With constant
+
 ```typescript
 // Example usage:
-import {RuleEngine , Operator} from "obey-the-rule";
+import { RuleEngine, Operator } from 'obey-the-rule';
 const functions = {
-  helloWorld: helloWorld
+  helloWorld: helloWorld,
 };
 
-export async function helloWorld() : Promise<any> {
-  console.log('Hello World')
+export async function helloWorld(): Promise<any> {
+  console.log('Hello World');
 }
 
 const testValue = 'This';
@@ -106,18 +107,20 @@ engine.addRule({
       {
         constant: testValue,
         operator: Operator.STRICT_EQUAL,
-        value: 'This'
-      }
+        value: 'This',
+      },
     ],
   },
-  after: {func : 'helloWorld'  , params: {
-    message: 'Rule work with success!',
-    success: true,
-  }},
+  after: {
+    func: 'helloWorld',
+    params: {
+      message: 'Rule work with success!',
+      success: true,
+    },
+  },
 });
 
- 
-const result : Result[] = await engine.obey();
+const result: Result[] = await engine.obey();
 
 console.log(JSON.stringify(result));
 
@@ -126,152 +129,180 @@ console.log(JSON.stringify(result));
 ```
 
 ### Example Usage Add rule and Add rules
+
 ```typescript
 const functions = {
   getCourier: getCourier,
-  logCourierInfo: logCourierInfo
+  logCourierInfo: logCourierInfo,
 };
 
-export async function getCourier(params : any): Promise<any> {
+export async function getCourier(params: any): Promise<any> {
   return {
     id: params?.courierId,
     status: 200,
     vehicle: 'Bike',
     courierInfo: {
       name: 'John Doe',
-      warehouse: 'Izmir'
-    }
+      warehouse: 'Izmir',
+    },
   };
 }
 
-export async function logCourierInfo(courier : any , params: any) : Promise<any> {
-
-  console.log(JSON.stringify({
-    courierInfo: {
-      status: courier.status,
-      vehicle: courier.vehicle,
-    },
-    params
-  }, null, 2));
+export async function logCourierInfo(courier: any, params: any): Promise<any> {
+  console.log(
+    JSON.stringify(
+      {
+        courierInfo: {
+          status: courier.status,
+          vehicle: courier.vehicle,
+        },
+        params,
+      },
+      null,
+      2,
+    ),
+  );
 }
-
 ```
-
 
 ```typescript
 // Example usage:
-import {RuleEngine , Operator} from "obey-the-rule";
+import { RuleEngine, Operator } from 'obey-the-rule';
 
 const engine = new RuleEngine(functions);
 
 //success rule example
 engine.addRule({
-  before: {func : 'getCourier'  , params: {
-    courierId: '6633d4699c759c778ab5b399'
-  }},
+  before: {
+    func: 'getCourier',
+    params: {
+      courierId: '6633d4699c759c778ab5b399',
+    },
+  },
   conditions: {
     and: [
       {
         fact: 'status',
         operator: Operator.STRICT_EQUAL,
-        value: 200
-      }
+        value: 200,
+      },
     ],
     or: [
       {
         fact: 'vehicle',
         operator: Operator.STRICT_EQUAL,
-        value: 'Bike'
+        value: 'Bike',
       },
       {
         fact: 'vehicle',
         operator: Operator.STRICT_EQUAL,
-        value: 'Car'
-      }
-    ]
+        value: 'Car',
+      },
+    ],
   },
-  after: {func : 'logCourierInfo'  , params: {
-    message: 'Rule work with success!',
-    success: true,
-  }},
+  after: {
+    func: 'logCourierInfo',
+    params: {
+      message: 'Rule work with success!',
+      success: true,
+    },
+  },
 });
 
 //failed rule example
 engine.addRule({
-  before: {func : 'getCourier'  , params: {
-    courierId: '6633d4699c759c778ab5b399'
-  }},
+  before: {
+    func: 'getCourier',
+    params: {
+      courierId: '6633d4699c759c778ab5b399',
+    },
+  },
   conditions: {
     and: [
       {
         fact: 'status',
         operator: Operator.STRICT_EQUAL,
-        value: 400
-      }
+        value: 400,
+      },
     ],
   },
-  after: {func : 'logCourierInfo'  , params: {
-    message: 'Rule work with success!',
-    success: true,
-  }},
+  after: {
+    func: 'logCourierInfo',
+    params: {
+      message: 'Rule work with success!',
+      success: true,
+    },
+  },
 });
 
 // Adding multiple rules at once
-engine.addRules([{
-  before: {func : 'getCourier'  , params: {
-    courierId: '6633d4699c759c778ab5b399'
-  }},
-  conditions: {
-    and: [
-      {
-        fact: 'status',
-        operator: Operator.STRICT_EQUAL,
-        value: 200
-      }
-    ],
-    or: [
-      {
-        fact: 'vehicle',
-        operator: Operator.STRICT_EQUAL,
-        value: 'Bike'
+engine.addRules([
+  {
+    before: {
+      func: 'getCourier',
+      params: {
+        courierId: '6633d4699c759c778ab5b399',
       },
-      {
-        fact: 'vehicle',
-        operator: Operator.STRICT_EQUAL,
-        value: 'Car'
-      }
-    ]
+    },
+    conditions: {
+      and: [
+        {
+          fact: 'status',
+          operator: Operator.STRICT_EQUAL,
+          value: 200,
+        },
+      ],
+      or: [
+        {
+          fact: 'vehicle',
+          operator: Operator.STRICT_EQUAL,
+          value: 'Bike',
+        },
+        {
+          fact: 'vehicle',
+          operator: Operator.STRICT_EQUAL,
+          value: 'Car',
+        },
+      ],
+    },
+    after: {
+      func: 'logCourierInfo',
+      params: {
+        message: 'Rule work with success!',
+        success: true,
+      },
+    },
   },
-  after: {func : 'logCourierInfo'  , params: {
-    message: 'Rule work with success!',
-    success: true,
-  }},
-},
 
-{
-  before: {func : 'getCourier'  , params: {
-    courierId: '6633d4699c759c778ab5b399'
-  }},
-  conditions: {
-    and: [
-      {
-        fact: 'status',
-        operator: Operator.STRICT_EQUAL,
-        value: 400
-      }
-    ],
+  {
+    before: {
+      func: 'getCourier',
+      params: {
+        courierId: '6633d4699c759c778ab5b399',
+      },
+    },
+    conditions: {
+      and: [
+        {
+          fact: 'status',
+          operator: Operator.STRICT_EQUAL,
+          value: 400,
+        },
+      ],
+    },
+    after: {
+      func: 'logCourierInfo',
+      params: {
+        message: 'Rule work with success!',
+        success: true,
+      },
+    },
   },
-  after: {func : 'logCourierInfo'  , params: {
-    message: 'Rule work with success!',
-    success: true,
-  }},
-}
-])
- 
-const result : Result[] = await engine.obey();
+]);
+
+const result: Result[] = await engine.obey();
 
 //[{"rule":{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":200}],"or":[{"fact":"vehicle","operator":"strictEqual","value":"Bike"},{"fact":"vehicle","operator":"strictEqual","value":"Car"}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}},"satisfied":true},{"rule":{"before":{"func":"getCourier","params":{"courierId":"6633d4699c759c778ab5b399"}},"conditions":{"and":[{"fact":"status","operator":"strictEqual","value":400}]},"after":{"func":"logCourierInfo","params":{"message":"Rule work with success!","success":true}}},"satisfied":false,"reason":"Conditions not met"}]
-
 ```
 
 For more detail you can see [examples](https://github.com/erdemkosk/obey-the-rule/blob/master/examples) 🤓
